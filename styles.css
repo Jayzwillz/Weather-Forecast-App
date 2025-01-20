@@ -1,0 +1,110 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(to bottom, #87cefa, #f0f8ff);
+    color: #333;
+  }
+  
+  .weather-app {
+    text-align: center;
+    padding: 20px;
+    background: linear-gradient(to top right, #ffffff, #e0eaff);
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    width: 90%;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .weather-app:hover {
+    transform: scale(1.05);
+  }
+  
+  .weather-app h1 {
+    margin-bottom: 20px;
+    color: #007bff;
+  }
+  
+  .search {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  .search input {
+    padding: 10px;
+    width: 70%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  
+  .search input:focus {
+    border-color: #007bff;
+  }
+  
+  .search button {
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .search button:hover {
+    background-color: #0056b3;
+  }
+  
+  .weather-result, .forecast {
+    margin-top: 20px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .weather-result p, .forecast ul {
+    margin: 5px 0;
+  }
+  
+  .forecast ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .forecast ul li {
+    margin: 5px 0;
+    padding: 10px;
+    background: #f0f8ff;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .hidden {
+    display: none;
+  }
+  
+  @media (max-width: 768px) {
+    .weather-app {
+      padding: 15px;
+    }
+  
+    .search input {
+      width: 65%;
+    }
+  
+    .search button {
+      padding: 10px;
+    }
+  }
+  
