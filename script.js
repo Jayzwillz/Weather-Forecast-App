@@ -1,73 +1,139 @@
-const apiKey = '36c7f69aa97a9b8bc5a505bf5a719719'; // Replace with your OpenWeather API key
-
-const cityInput = document.getElementById('cityInput');
+const apiKey = '28b04b947e47e92ff852f0b2e6abc4b0'; // Your OpenWeather API key
 const searchBtn = document.getElementById('searchBtn');
-const weatherResult = document.getElementById('weatherResult');
-const cityName = document.getElementById('cityName');
-const temperature = document.getElementById('temperature');
-const description = document.getElementById('description');
-const humidity = document.getElementById('humidity');
-const wind = document.getElementById('wind');
-const forecast = document.getElementById('forecast');
-const forecastList = document.getElementById('forecastList');
+const cityInput = document.getElementById('city');
+const loadingIndicator = document.getElementById('loading');
+const weatherDetails = document.getElementById('weatherDetails');
+const forecastItems = document.getElementById('forecastItems');
+
+// On page load, get the user's current location
+window.onload = () => {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition((position) => {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+      getWeatherByCoordinates(lat, lon);
+    }, (error) => {
+      alert('Geolocation error: ' + error.message);
+    });
+  } else {
+    alert('Geolocation is not supported by this browser.');
+  }
+};
 
 searchBtn.addEventListener('click', () => {
   const city = cityInput.value.trim();
   if (city) {
-    fetchWeatherData(city);
-    fetchForecastData(city);
+    getWeather(city);
   }
 });
 
-async function fetchWeatherData(city) {
+async function getWeather(city) {
+  loadingIndicator.style.display = 'block';
+  weatherDetails.style.display = 'none';
+  forecastItems.innerHTML = '';
+
   try {
-    const response = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`
-    );
-    if (!response.ok) {
-      throw new Error('City not found');
-    }
-    const data = await response.json();
-    displayWeatherData(data);
+    const currentWeather = await fetchWeatherData(city);
+    const forecast = await fetchForecastData(city);
+
+    displayWeather(currentWeather);
+    displayForecast(forecast);
+    changeBackgroundBasedOnWeather(currentWeather.weather[0].description);
   } catch (error) {
-    alert(error.message);
+    alert('Error fetching data: ' + error.message);
+  } finally {
+    loadingIndicator.style.display = 'none';
   }
+}
+
+async function getWeatherByCoordinates(lat, lon) {
+  loadingIndicator.style.display = 'block';
+  weatherDetails.style.display = 'none';
+  forecastItems.innerHTML = '';
+
+  try {
+    const currentWeather = await fetchWeatherDataByCoordinates(lat, lon);
+    const forecast = await fetchForecastDataByCoordinates(lat, lon);
+
+    displayWeather(currentWeather);
+    displayForecast(forecast);
+    changeBackgroundBasedOnWeather(currentWeather.weather[0].description);
+  } catch (error) {
+    alert('Error fetching data: ' + error.message);
+  } finally {
+    loadingIndicator.style.display = 'none';
+  }
+}
+
+async function fetchWeatherData(city) {
+  const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`);
+  if (!response.ok) {
+    throw new Error('City not found');
+  }
+  return await response.json();
 }
 
 async function fetchForecastData(city) {
-  try {
-    const response = await fetch(
-      `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`
-    );
-    if (!response.ok) {
-      throw new Error('City not found');
-    }
-    const data = await response.json();
-    displayForecastData(data);
-  } catch (error) {
-    console.error(error.message);
+  const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&cnt=5&appid=${apiKey}`);
+  if (!response.ok) {
+    throw new Error('Forecast data not found');
   }
+  return await response.json();
 }
 
-function displayWeatherData(data) {
-  cityName.textContent = data.name;
-  temperature.textContent = `Temperature: ${data.main.temp}°C`;
-  description.textContent = `Weather: ${data.weather[0].description}`;
-  humidity.textContent = `Humidity: ${data.main.humidity}%`;
-  wind.textContent = `Wind Speed: ${data.wind.speed} m/s`;
-
-  weatherResult.classList.remove('hidden');
+async function fetchWeatherDataByCoordinates(lat, lon) {
+  const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`);
+  if (!response.ok) {
+    throw new Error('Weather data not found');
+  }
+  return await response.json();
 }
 
-function displayForecastData(data) {
-  forecastList.innerHTML = '';
-  const forecastItems = data.list.filter((item, index) => index % 8 === 0).slice(0, 3);
+async function fetchForecastDataByCoordinates(lat, lon) {
+  const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&cnt=5&appid=${apiKey}`);
+  if (!response.ok) {
+    throw new Error('Forecast data not found');
+  }
+  return await response.json();
+}
 
-  forecastItems.forEach(item => {
-    const li = document.createElement('li');
-    li.textContent = `${new Date(item.dt_txt).toLocaleDateString()}: ${item.main.temp}°C, ${item.weather[0].description}`;
-    forecastList.appendChild(li);
+function displayWeather(data) {
+  document.getElementById('cityName').textContent = data.name;
+  document.getElementById('currentTemp').textContent = `Temperature: ${data.main.temp}°C`;
+  document.getElementById('humidity').textContent = `Humidity: ${data.main.humidity}%`;
+  document.getElementById('windSpeed').textContent = `Wind Speed: ${data.wind.speed} m/s`;
+  document.getElementById('description').textContent = `Weather: ${data.weather[0].description}`;
+  weatherDetails.style.display = 'block';
+}
+
+function displayForecast(data) {
+  data.list.forEach(item => {
+    const forecastItem = document.createElement('div');
+    forecastItem.classList.add('forecastItem');
+    forecastItem.innerHTML = `
+      <p>${new Date(item.dt_txt).toLocaleDateString()}</p>
+      <p>${item.main.temp}°C</p>
+      <p>${item.weather[0].description}</p>
+    `;
+    forecastItems.appendChild(forecastItem);
   });
+}
 
-  forecast.classList.remove('hidden');
+function changeBackgroundBasedOnWeather(weatherDescription) {
+  if (weatherDescription.includes("clear")) {
+    document.body.style.backgroundImage =
+      "url('https://img.freepik.com/free-photo/blue-sky-with-clouds-reflected-water_1160-460.jpg')";
+  } else if (weatherDescription.includes("cloud")) {
+    document.body.style.backgroundImage =
+      "url('https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Cloudy_Sky_%2841158984%29.jpeg/1280px-Cloudy_Sky_%2841158984%29.jpeg')";
+  } else if (weatherDescription.includes("rain")) {
+    document.body.style.backgroundImage =
+      "url('https://static.vecteezy.com/system/resources/previews/042/195/728/non_2x/ai-generated-rainy-sky-background-free-photo.jpg')";
+  } else if (weatherDescription.includes("storm")) {
+    document.body.style.backgroundImage =
+      "url('https://img.freepik.com/premium-photo/dark-stormy-sky-with-lightning-stormy-sea-lightning-strike-sky-dark-clouds-bad-weather-before-big-storm-rain_924727-117.jpg')";
+  } else {
+    document.body.style.backgroundImage =
+      "linear-gradient(to bottom, #87cefa, #f0f8ff)";
+  }
 }

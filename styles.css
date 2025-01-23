@@ -1,110 +1,150 @@
+/* General Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Arial', sans-serif;
+}
+
+/* Body and background */
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background: linear-gradient(to bottom, #87cefa, #f0f8ff);
-    color: #333;
-  }
-  
-  .weather-app {
-    text-align: center;
+  background-image: linear-gradient(to bottom, #87cefa, #f0f8ff);
+  background-size: cover; /* Ensure the background image covers the entire screen */
+  background-position: center; /* Center the background image */
+  color: #fff;
+  transition: background-image 0.5s ease;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 0; /* Remove padding to ensure background image fills screen */
+  margin: 0; /* Remove margin for full-screen coverage */
+  text-align: center;
+}
+
+/* Weather app container */
+.weather-container {
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  max-width: 500px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 1;
+}
+
+/* City input and button */
+#city {
+  width: 80%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+#searchBtn {
+  padding: 10px 20px;
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+#searchBtn:hover {
+  background-color: #218838;
+}
+
+/* Loading and error handling */
+#loading {
+  font-size: 18px;
+  color: #333;
+  font-weight: bold;
+  display: none;
+}
+
+#errorMessage {
+  font-size: 18px;
+  color: red;
+  margin-top: 15px;
+}
+
+/* Weather details */
+#weatherDetails {
+  margin-top: 20px;
+}
+
+#cityName {
+  font-size: 30px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+#currentTemp, #humidity, #windSpeed, #description {
+  font-size: 18px;
+  margin: 5px 0;
+}
+
+#currentTemp {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.forecastItem {
+  background-color: rgba(0, 0, 0, 0.2);
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 10px;
+  color: #fff;
+}
+
+.forecastItem p {
+  margin: 5px 0;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .weather-container {
     padding: 20px;
-    background: linear-gradient(to top right, #ffffff, #e0eaff);
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    max-width: 400px;
     width: 90%;
-    transition: transform 0.3s ease-in-out;
   }
-  
-  .weather-app:hover {
-    transform: scale(1.05);
+
+  #cityName {
+    font-size: 24px;
   }
-  
-  .weather-app h1 {
-    margin-bottom: 20px;
-    color: #007bff;
+
+  #currentTemp {
+    font-size: 22px;
   }
-  
-  .search {
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: center;
-    gap: 10px;
+
+  #searchBtn {
+    font-size: 14px;
   }
-  
-  .search input {
-    padding: 10px;
-    width: 70%;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    outline: none;
-    transition: border-color 0.3s;
+}
+
+@media (max-width: 480px) {
+  .weather-container {
+    padding: 15px;
+    width: 100%;
   }
-  
-  .search input:focus {
-    border-color: #007bff;
+
+  #cityName {
+    font-size: 20px;
   }
-  
-  .search button {
-    padding: 10px 15px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+
+  #currentTemp {
+    font-size: 20px;
   }
-  
-  .search button:hover {
-    background-color: #0056b3;
+
+  #searchBtn {
+    font-size: 12px;
+    padding: 8px 16px;
   }
-  
-  .weather-result, .forecast {
-    margin-top: 20px;
-    padding: 10px;
-    background: rgba(255, 255, 255, 0.8);
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .weather-result p, .forecast ul {
-    margin: 5px 0;
-  }
-  
-  .forecast ul {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .forecast ul li {
-    margin: 5px 0;
-    padding: 10px;
-    background: #f0f8ff;
-    border-radius: 5px;
-    display: flex;
-    justify-content: space-between;
-  }
-  
-  .hidden {
-    display: none;
-  }
-  
-  @media (max-width: 768px) {
-    .weather-app {
-      padding: 15px;
-    }
-  
-    .search input {
-      width: 65%;
-    }
-  
-    .search button {
-      padding: 10px;
-    }
-  }
-  
+}
