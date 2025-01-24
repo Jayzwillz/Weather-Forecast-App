@@ -1,4 +1,6 @@
-const apiKey = '28b04b947e47e92ff852f0b2e6abc4b0'; // Your OpenWeather API key
+import config from './config.js';
+
+const apiKey = config.apiKey;
 const searchBtn = document.getElementById('searchBtn');
 const cityInput = document.getElementById('city');
 const loadingIndicator = document.getElementById('loading');
