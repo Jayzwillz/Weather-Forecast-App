@@ -74,7 +74,7 @@ async function fetchWeatherData(city) {
 }
 
 async function fetchForecastData(city) {
-  const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&cnt=5&appid=${apiKey}`);
+  const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=metric&appid=${apiKey}`);
   if (!response.ok) {
     throw new Error('Forecast data not found');
   }
@@ -90,7 +90,7 @@ async function fetchWeatherDataByCoordinates(lat, lon) {
 }
 
 async function fetchForecastDataByCoordinates(lat, lon) {
-  const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&cnt=5&appid=${apiKey}`);
+  const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`);
   if (!response.ok) {
     throw new Error('Forecast data not found');
   }
@@ -107,13 +107,23 @@ function displayWeather(data) {
 }
 
 function displayForecast(data) {
-  data.list.forEach(item => {
-    const forecastItem = document.createElement('div');
-    forecastItem.classList.add('forecastItem');
+  const dailyForecasts = {};
+
+  data.list.forEach((item) => {
+    const date = new Date(item.dt * 1000).toISOString().split("T")[0];
+    if (!dailyForecasts[date]) {
+      dailyForecasts[date] = item;
+    }
+  });
+
+  Object.keys(dailyForecasts).slice(0, 5).forEach((date) => {
+    const forecast = dailyForecasts[date];
+    const forecastItem = document.createElement("div");
+    forecastItem.classList.add("forecastItem");
     forecastItem.innerHTML = `
-      <p>${new Date(item.dt_txt).toLocaleDateString()}</p>
-      <p>${item.main.temp}°C</p>
-      <p>${item.weather[0].description}</p>
+      <p><strong>${new Date(forecast.dt * 1000).toDateString()}</strong></p>
+      <p>Temp: ${Math.round(forecast.main.temp)}°C</p>
+      <p>${forecast.weather[0].description}</p>
     `;
     forecastItems.appendChild(forecastItem);
   });
